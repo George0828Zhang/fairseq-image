@@ -23,6 +23,7 @@ from fairseq.data import (
 from fairseq.tasks import LegacyFairseqTask, register_task
 
 from .image_captioning import ImageCaptioningTask
+from .iterative_refinement_generator import IterativeRefinementGenerator
 # from .data import ImageDataset
 
 # EVAL_BLEU_ORDER = 4
@@ -83,7 +84,7 @@ class ImageCaptioningLevenshteinTask(ImageCaptioningTask):
 
     def build_generator(self, models, args):
         # add models input to match the API for SequenceGenerator
-        from fairseq.iterative_refinement_generator import IterativeRefinementGenerator
+        # from fairseq.iterative_refinement_generator import IterativeRefinementGenerator
         return IterativeRefinementGenerator(
             self.target_dictionary,
             eos_penalty=getattr(args, 'iter_decode_eos_penalty', 0.0),
@@ -95,14 +96,14 @@ class ImageCaptioningLevenshteinTask(ImageCaptioningTask):
             adaptive=not getattr(args, 'iter_decode_force_max_iter', False),
             retain_history=getattr(args, 'retain_iter_history', False))
 
-    def build_dataset_for_inference(self, src_tokens, src_lengths, constraints=None):
-        """ *Removes append_bos* """
-        if constraints is not None:
-            # Though see Susanto et al. (ACL 2020): https://www.aclweb.org/anthology/2020.acl-main.325/
-            raise NotImplementedError(
-                "Constrained decoding with the translation_lev task is not supported")
-        return LanguagePairDataset(src_tokens, src_lengths, self.source_dictionary,
-                                   tgt_dict=self.target_dictionary)
+    # def build_dataset_for_inference(self, src_tokens, src_lengths, constraints=None):
+    #     """ *Removes append_bos* """
+    #     if constraints is not None:
+    #         # Though see Susanto et al. (ACL 2020): https://www.aclweb.org/anthology/2020.acl-main.325/
+    #         raise NotImplementedError(
+    #             "Constrained decoding with the translation_lev task is not supported")
+    #     return LanguagePairDataset(src_tokens, src_lengths, self.source_dictionary,
+    #                                tgt_dict=self.target_dictionary)
 
     def train_step(self,
                    sample,
@@ -111,13 +112,8 @@ class ImageCaptioningLevenshteinTask(ImageCaptioningTask):
                    optimizer,
                    update_num,
                    ignore_grad=False):
-        model.train()
         sample['prev_target'] = self.inject_noise(sample['target'])
-        loss, sample_size, logging_output = criterion(model, sample)
-        if ignore_grad:
-            loss *= 0
-        optimizer.backward(loss)
-        return loss, sample_size, logging_output
+        return super().train_step(sample, model, criterion, optimizer, update_num, ignore_grad)
 
     def valid_step(self, sample, model, criterion):
         sample['prev_target'] = self.inject_noise(sample['target'])
