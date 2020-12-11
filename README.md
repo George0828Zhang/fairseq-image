@@ -5,7 +5,7 @@ git clone https://github.com/pytorch/fairseq.git
 cd fairseq
 git checkout 8a0b56efeecba6941c1c0e81a3b86f0a219e6653
 export CUDA_HOME=/usr/local/cuda
-pip install .
+python setup.py install
 ```
 2. (Optional) Install apex
 ```
