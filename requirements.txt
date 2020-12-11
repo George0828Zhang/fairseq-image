@@ -1,4 +1,3 @@
-fairseq==0.10.1
 editdistance
 imagesize
 sentencepiece
