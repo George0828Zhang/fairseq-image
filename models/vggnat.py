@@ -93,6 +93,7 @@ def base_architecture(args):
     ar_base_architecture(args)
 
     ### nat specific
+    args.apply_bert_init = getattr(args, "apply_bert_init", False)
     args.sg_length_pred = getattr(args, "sg_length_pred", False)
     args.pred_length_offset = getattr(args, "pred_length_offset", False)
     args.length_loss_factor = getattr(args, "length_loss_factor", 0.1)
