@@ -1,4 +1,5 @@
-### Setup
+## Setup
+
 1. Install fairseq
 ```bash
 git clone https://github.com/pytorch/fairseq.git
@@ -10,8 +11,8 @@ python setup.py install
 2. (Optional) Install apex
 ```bash
 # note that apex requires that nvcc on system should be same version as that used to build torch 
-# e.g. torch 1.6.0 ==> nvcc -V should be 10.2
-# e.g. torch 1.2.0 ==> nvcc -V should be 10.0
+# e.g. torch 1.7.0+cu110 ==> nvcc -V should be 11.0,
+#      torch 1.6.0+cu102 ==> nvcc -V should be 10.2, etc.
 
 git clone https://github.com/NVIDIA/apex
 cd apex
@@ -24,9 +25,34 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 pip install -r requirements.txt
 ```
 
-### Usage
-#### Train
+## Usage
+**Download the dataset for training:**
+
+```bash
+mkdir -p DATA/download
+cd DATA/download
+wget http://lstm.seas.harvard.edu/latex/data/im2latex_validate_filter.lst
+wget http://lstm.seas.harvard.edu/latex/data/im2latex_train_filter.lst
+wget http://lstm.seas.harvard.edu/latex/data/im2latex_test_filter.lst
+wget http://lstm.seas.harvard.edu/latex/data/formula_images_processed.tar.gz
+wget http://lstm.seas.harvard.edu/latex/data/im2latex_formulas.norm.lst
+tar -zxvf formula_images_processed.tar.gz
+```
+
+**Preprocess:**
+```bash
+cd ../../
+DLDIR=./DATA/download
+OUTDIR=./DATA/data-bin/im2latex
+# optionally set fairseq directory, where we can find ${fairseq_dir}/scripts/spm_train.py & spm_encode.py 
+# export fairseq_dir=./fairseq 
+bash datasets/prepare-im2latex.sh ${DLDIR} ${OUTDIR} 
+```
+
+**Train**
 ```bash
 cd exp
+# optionally tune hyper parameters in train_insertion.sh
+# then begin training
 bash train_insertion.sh
 ```

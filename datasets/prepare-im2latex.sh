@@ -4,7 +4,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-fairseq_dir=$(realpath ../../../fairseq)
+fairseq_dir=${fairseq_dir:='../fairseq'}
+fairseq_dir=$(realpath $fairseq_dir)
 spm_train=${fairseq_dir}/scripts/spm_train.py
 spm_encode=${fairseq_dir}/scripts/spm_encode.py
 
