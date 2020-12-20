@@ -53,6 +53,7 @@ class ImageDataset(FairseqDataset):
         # self.images = []
         self.frame_sizes = []
         self.transform = transforms.Compose([
+            transforms.RandomAffine(15, translate=(0.1, 0.1), scale=(0.9, 1.1), shear=0.1),
             transforms.Grayscale(num_output_channels=1),
             transforms.ToTensor(),
             transforms.Normalize((0.,), (1.,)),
