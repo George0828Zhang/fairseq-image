@@ -15,7 +15,8 @@ if [ "$#" -ne 2 ]; then
   exit 1
 fi
 
-PREP_JSON=$(pwd)/img_prep_json.py
+SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+PREP_JSON=$SCRIPTPATH/img_prep_json.py
 download_dir=$(realpath ${1%/})
 out_dir=${2%/}
 
